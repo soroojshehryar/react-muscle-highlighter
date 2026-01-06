@@ -1,0 +1,67 @@
+{
+  "name": "react-muscle-highlighter",
+  "version": "1.2.0",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js",
+      "types": "./dist/types/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "npm run build:esm && npm run build:cjs && npm run build:types",
+    "build:esm": "tsc --module es2020 --target es2020 --outDir dist/esm --jsx react-jsx",
+    "build:cjs": "tsc --module commonjs --target es2020 --outDir dist/cjs --jsx react-jsx",
+    "build:types": "tsc --declaration --emitDeclarationOnly --outDir dist/types",
+    "clean": "rimraf dist",
+    "prepublishOnly": "npm run clean && npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/soroojshehryar/react-muscle-highlighter.git"
+  },
+  "keywords": [
+    "react",
+    "body",
+    "muscle",
+    "anatomy",
+    "fitness",
+    "workout",
+    "health",
+    "medical",
+    "visualization",
+    "interactive",
+    "component",
+    "svg",
+    "human",
+    "body-parts",
+    "exercise",
+    "training",
+    "physiotherapy"
+  ],
+  "author": "soroojshehryar",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/soroojshehryar/react-muscle-highlighter/issues"
+  },
+  "homepage": "https://github.com/soroojshehryar/react-muscle-highlighter#readme",
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "rimraf": "^5.0.0",
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
