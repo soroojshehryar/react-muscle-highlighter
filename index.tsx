@@ -102,30 +102,48 @@ const Body = ({
         (part) => !hiddenParts.includes(part.slug!)
       );
 
-      // Create a map of user data by slug for faster lookup
-      const userDataMap = new Map<string, ExtendedBodyPart>();
+      // Create a map of user data by slug+side for per-side customization
+      // Key format: "slug" or "slug:left"/"slug:right"
+      const userDataMap = new Map<string, ExtendedBodyPart[]>();
       data.forEach((userPart) => {
         if (userPart.slug) {
-          userDataMap.set(userPart.slug, userPart);
+          const key = userPart.side ? `${userPart.slug}:${userPart.side}` : userPart.slug;
+          const existing = userDataMap.get(key) || [];
+          userDataMap.set(key, [...existing, userPart]);
         }
       });
 
+      // Get the user part(s) for a given slug and side
+      const getUserParts = (slug: string, side?: "left" | "right") => {
+        // Try exact match with side first
+        if (side) {
+          const sideKey = `${slug}:${side}`;
+          const sideSpecific = userDataMap.get(sideKey);
+          if (sideSpecific && sideSpecific.length > 0) return sideSpecific;
+        }
+        // Fall back to slug-only (applies to both sides)
+        const general = userDataMap.get(slug);
+        return general || [];
+      };
+
       // Merge asset body parts with user data
       return filteredDataSource.map((assetPart): ExtendedBodyPart => {
-        const userPart = userDataMap.get(assetPart.slug!);
+        const userParts = getUserParts(assetPart.slug!);
 
-        if (!userPart) {
+        if (userParts.length === 0) {
           // No user data for this part, return as-is
           return assetPart;
         }
 
+        // Use the first matching user part (maintains backward compatibility)
+        const userPart = userParts[0];
+
         // Merge asset part (has path) with user part (has styles, color, etc.)
         const merged: ExtendedBodyPart = {
           ...assetPart,
-          // Explicitly copy user properties
+          // Explicitly copy first user property as fallback
           styles: userPart.styles,
           intensity: userPart.intensity,
-          side: userPart.side,
           color: userPart.color,
         };
 
@@ -140,9 +158,29 @@ const Body = ({
     [data, colors, hiddenParts]
   );
 
-  const getColorToFill = (bodyPart: ExtendedBodyPart) => {
+  const getColorToFill = (bodyPart: ExtendedBodyPart, side?: "left" | "right") => {
     if (bodyPart.slug && disabledParts.includes(bodyPart.slug)) {
       return "#EBEBE4";
+    }
+
+    // When rendering a specific side path, look up side-specific user data
+    if (side && bodyPart.slug) {
+      const sideSpecificPart = data.find(
+        (d) => d.slug === bodyPart.slug && d.side === side
+      );
+      
+      if (sideSpecificPart) {
+        // Found side-specific data - use it
+        if (sideSpecificPart.styles?.fill) {
+          return sideSpecificPart.styles.fill;
+        }
+        if (sideSpecificPart.color) {
+          return sideSpecificPart.color;
+        }
+        if (sideSpecificPart.intensity && sideSpecificPart.intensity > 0) {
+          return colors[sideSpecificPart.intensity - 1];
+        }
+      }
     }
 
     // Priority: per-part styles.fill > color prop > intensity-based color > default
@@ -199,12 +237,11 @@ const Body = ({
           );
 
           const leftPaths = (bodyPart.path?.left || []).map((path, index) => {
-            const isOnlyRight =
-              data.find((d) => d.slug === bodyPart.slug)?.side === "right";
+            const isOnlyRight = !data.find(
+              (d) => d.slug === bodyPart.slug && (d.side === undefined || d.side === "left")
+            );
             const partStyles = getPartStyles(bodyPart);
-            const fillColor = isOnlyRight
-              ? defaultFill
-              : getColorToFill(bodyPart);
+            const fillColor = isOnlyRight ? defaultFill : getColorToFill(bodyPart, "left");
 
             return (
               <path
@@ -230,12 +267,11 @@ const Body = ({
           });
 
           const rightPaths = (bodyPart.path?.right || []).map((path, index) => {
-            const isOnlyLeft =
-              data.find((d) => d.slug === bodyPart.slug)?.side === "left";
+            const isOnlyLeft = !data.find(
+              (d) => d.slug === bodyPart.slug && (d.side === undefined || d.side === "right")
+            );
             const partStyles = getPartStyles(bodyPart);
-            const fillColor = isOnlyLeft
-              ? defaultFill
-              : getColorToFill(bodyPart);
+            const fillColor = isOnlyLeft ? defaultFill : getColorToFill(bodyPart, "right");
 
             return (
               <path

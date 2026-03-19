@@ -56,3 +56,7 @@ dist-ssr/
 *.tmp
 *.temp
 .cache/
+
+# Storybook
+storybook-static/
+.storybook/cache/

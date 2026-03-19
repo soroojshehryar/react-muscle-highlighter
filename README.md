@@ -348,13 +348,19 @@ When styling a body part, the following priority applies:
 
 ```bash
 npm run build
+npm run build-storybook
 ```
+
 
 ### Development
 
+The project has been fitted with story book so you can easily view and play around with the body component when making changes.
+
 ```bash
-npm run dev
+npm run storybook
 ```
+
+This command will use vite to prop up a simple dev server on port 6006 and allow for easy viewing.
 
 ## 📝 License
 
