@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 jobs:
-  chromatic-deployment:
+  build-targets:
     runs-on: ubuntu-latest
     
     steps:

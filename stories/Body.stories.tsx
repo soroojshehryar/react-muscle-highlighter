@@ -77,6 +77,70 @@ export const MultipleMuscles: Story = {
   },
 };
 
+
+export const SideSpecificColors: Story = {
+  args: {
+    data: [
+      { slug: 'biceps' as Slug, side: 'left', color: '#ff0000' } as ExtendedBodyPart,
+      { slug: 'biceps' as Slug, side: 'right', color: '#00ff00' } as ExtendedBodyPart,
+    ] as ExtendedBodyPart[],
+    side: 'front',
+    gender: 'male',
+    colors: sampleColors,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 
+          'Different colors for left and right sides using the `side` property. Use separate entries with `side: "left"` or `side: "right"`.',
+      },
+    },
+  },
+};
+
+export const SideSpecificIntensity: Story = {
+  args: {
+    data: [
+      { slug: 'quadriceps' as Slug, side: 'left', intensity: 1 } as ExtendedBodyPart,
+      { slug: 'quadriceps' as Slug, side: 'right', intensity: 3 } as ExtendedBodyPart,
+    ] as ExtendedBodyPart[],
+    side: 'front',
+    gender: 'male',
+    colors: sampleColors,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 
+          'Different intensity levels per side. Intensity maps to the `colors` array (1-indexed). Left quads mild (level 1), right quads severe (level 3).',
+      },
+    },
+  },
+};
+
+export const MixedUsage: Story = {
+  args: {
+    data: [
+      { slug: 'chest' as Slug, intensity: 2 } as ExtendedBodyPart,
+      { slug: 'biceps' as Slug, side: 'left', color: '#ff0000' } as ExtendedBodyPart,
+      { slug: 'biceps' as Slug, side: 'right', color: '#00ff00' } as ExtendedBodyPart,
+      { slug: 'quadriceps' as Slug, side: 'left', intensity: 1 } as ExtendedBodyPart,
+      { slug: 'quadriceps' as Slug, side: 'right', intensity: 3 } as ExtendedBodyPart,
+    ] as ExtendedBodyPart[],
+    side: 'front',
+    gender: 'male',
+    colors: sampleColors,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 
+          'Combining different approaches: backward compatible (chest), direct colors per side (biceps), and intensity per side (quadriceps).',
+      },
+    },
+  },
+};
+
 export const AllViews: Story = {
   render: (args) => (
     <div style={{ 
